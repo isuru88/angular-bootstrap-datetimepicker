@@ -136,15 +136,16 @@
         '</table></div>',
         scope: {
           onSetTime: '&',
-          beforeRender: '&'
+          beforeRender: '&',
+          datetimepickerConfig: '='
         },
         replace: true,
         link: function link(scope, element, attrs, ngModelController) {
 
           var directiveConfig = {};
 
-          if (attrs.datetimepickerConfig) {
-            directiveConfig = scope.$parent.$eval(attrs.datetimepickerConfig);
+          if (scope.datetimepickerConfig) {
+            directiveConfig = scope.datetimepickerConfig;
           }
 
           var configuration = {};
@@ -399,6 +400,22 @@
               scope.data = result;
             }
           };
+
+          scope.$watch('datetimepickerConfig', function() {
+            var directiveConfig = {};
+
+            if (scope.datetimepickerConfig) {
+              directiveConfig = scope.datetimepickerConfig;
+            }
+
+            configuration = {};
+
+            angular.extend(configuration, defaultConfig, directiveConfig);
+
+            validateConfiguration(configuration);
+            console.log(configuration);
+            scope.changeView(configuration.startView, new DateObject({utcDateValue: getUTCTime(ngModelController.$viewValue)}));
+          });
 
           ngModelController.$render = function $render() {
             scope.changeView(configuration.startView, new DateObject({utcDateValue: getUTCTime(ngModelController.$viewValue)}));
